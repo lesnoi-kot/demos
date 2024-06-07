@@ -711,6 +711,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^20.14.2":
+  version: 20.14.2
+  resolution: "@types/node@npm:20.14.2"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10c0/2d86e5f2227aaa42212e82ea0affe72799111b888ff900916376450b02b09b963ca888b20d9c332d8d2b833ed4781987867a38eaa2e4863fa8439071468b0a6f
+  languageName: node
+  linkType: hard
+
 "abbrev@npm:^2.0.0":
   version: 2.0.0
   resolution: "abbrev@npm:2.0.0"
@@ -1041,7 +1050,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.3.1, debug@npm:^4.3.4":
+"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.4":
   version: 4.3.5
   resolution: "debug@npm:4.3.5"
   dependencies:
@@ -1057,6 +1066,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "demos@workspace:."
   dependencies:
+    "@types/node": "npm:^20.14.2"
     autoprefixer: "npm:^10.4.19"
     postcss: "npm:^8.4.38"
     solid-js: "npm:^1.8.15"
@@ -1064,6 +1074,7 @@ __metadata:
     typescript: "npm:^5.2.2"
     vite: "npm:^5.2.0"
     vite-plugin-solid: "npm:^2.10.2"
+    vite-tsconfig-paths: "npm:^4.3.2"
   languageName: unknown
   linkType: soft
 
@@ -1369,6 +1380,13 @@ __metadata:
   version: 11.12.0
   resolution: "globals@npm:11.12.0"
   checksum: 10c0/758f9f258e7b19226bd8d4af5d3b0dcf7038780fb23d82e6f98932c44e239f884847f1766e8fa9cc5635ccb3204f7fa7314d4408dd4002a5e8ea827b4018f0a1
+  languageName: node
+  linkType: hard
+
+"globrex@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "globrex@npm:0.1.2"
+  checksum: 10c0/a54c029520cf58bda1d8884f72bd49b4cd74e977883268d931fd83bcbd1a9eb96d57c7dbd4ad80148fb9247467ebfb9b215630b2ed7563b2a8de02e1ff7f89d1
   languageName: node
   linkType: hard
 
@@ -2481,6 +2499,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tsconfck@npm:^3.0.3":
+  version: 3.1.0
+  resolution: "tsconfck@npm:3.1.0"
+  peerDependencies:
+    typescript: ^5.0.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  bin:
+    tsconfck: bin/tsconfck.js
+  checksum: 10c0/8d397c181259119848371f1b16dd88e1441aac76f2e3cd2fdd7b10723309735af5203ac160a6396d663e6a54206f0be44a67ed759db5c38758674fcdf9ac461c
+  languageName: node
+  linkType: hard
+
 "typescript@npm:^5.2.2":
   version: 5.4.5
   resolution: "typescript@npm:5.4.5"
@@ -2498,6 +2530,13 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10c0/9cf4c053893bcf327d101b6c024a55baf05430dc30263f9adb1bf354aeffc11306fe1f23ba2f9a0209674359f16219b5b7d229e923477b94831d07d5a33a4217
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~5.26.4":
+  version: 5.26.5
+  resolution: "undici-types@npm:5.26.5"
+  checksum: 10c0/bb673d7876c2d411b6eb6c560e0c571eef4a01c1c19925175d16e3a30c4c428181fb8d7ae802a261f283e4166a0ac435e2f505743aa9e45d893f9a3df017b501
   languageName: node
   linkType: hard
 
@@ -2565,6 +2604,22 @@ __metadata:
     "@testing-library/jest-dom":
       optional: true
   checksum: 10c0/872a9d63d9d1ada29921de37f7420b0636ae7bc4c596072da0f098d03d932dee38b9e5f6ce88b42b4d3b19c9f06ceffcb86a335d2752784da18ca2827bf8ee56
+  languageName: node
+  linkType: hard
+
+"vite-tsconfig-paths@npm:^4.3.2":
+  version: 4.3.2
+  resolution: "vite-tsconfig-paths@npm:4.3.2"
+  dependencies:
+    debug: "npm:^4.1.1"
+    globrex: "npm:^0.1.2"
+    tsconfck: "npm:^3.0.3"
+  peerDependencies:
+    vite: "*"
+  peerDependenciesMeta:
+    vite:
+      optional: true
+  checksum: 10c0/f390ac1d1c3992fc5ac50f9274c1090f8b55ab34a89ea88893db9a6924a3b26c9f64bc1163615150ad100749db73b6b2cf1d57f6cd60df6e762ceb5b8ad30024
   languageName: node
   linkType: hard
 
