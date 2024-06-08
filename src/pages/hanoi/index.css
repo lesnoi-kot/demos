@@ -1,0 +1,32 @@
+@keyframes rebound {
+  from {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animateRebound {
+  animation: rebound 150ms ease-in-out -20ms 1;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.animatePop {
+  transform-origin: bottom center;
+  animation: pop 150ms ease-in-out 0ms 1;
+}
