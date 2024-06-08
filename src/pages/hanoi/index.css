@@ -11,22 +11,5 @@
 }
 
 .animateRebound {
-  animation: rebound 150ms ease-in-out -20ms 1;
-}
-
-@keyframes pop {
-  from {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.25);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
-.animatePop {
-  transform-origin: bottom center;
-  animation: pop 150ms ease-in-out 0ms 1;
+  animation: rebound 200ms ease-in-out -20ms 1;
 }

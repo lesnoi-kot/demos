@@ -2,14 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  color-scheme: dark light;
+}
+
 body {
   @apply dark:bg-slate-800 dark:text-white;
 }
 
-button {
-  @apply px-4 py-2 border-2 dark:border-slate-200 border-slate-900 rounded-sm;
-}
+@layer components {
+  button {
+    @apply px-4 py-2 border-2 dark:border-slate-200 border-slate-900 rounded-sm;
+  }
 
-button:hover {
-  @apply bg-slate-300 dark:bg-slate-700;
+  button:hover {
+    @apply bg-slate-300 dark:bg-slate-700;
+  }
 }

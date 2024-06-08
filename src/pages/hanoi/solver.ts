@@ -1,3 +1,5 @@
+import { memoize } from "lodash";
+
 const [PEG_A, PEG_B, PEG_C] = [1, 2, 3];
 
 export type Step = [from: number, to: number];
@@ -15,3 +17,5 @@ export function getTowerSolution(n: number, from: number, to: number): Step[] {
     ...getTowerSolution(n - 1, tmp_to, to),
   ];
 }
+
+export const getMemoizedTowerSolution = memoize(getTowerSolution);
