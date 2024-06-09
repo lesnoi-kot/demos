@@ -1,59 +1,28 @@
-/* @refresh reload */
-import { debounce, range } from "lodash";
+import { For, batch, createSignal, onCleanup, onMount } from "solid-js";
 import { createMutable } from "solid-js/store";
-import { For, batch, createSignal, onMount, type Signal } from "solid-js";
-import { nanoid } from "nanoid";
 
 import { assertValue } from "@/utils/assert";
 import { sleep } from "@/utils/async";
 
-import { getColor } from "./utils";
 import { getMemoizedTowerSolution, type Step } from "./solver";
+import { newPegs, type Disk, type Pegs } from "./types";
+import { navbarState, setNavbarState } from "./Navbar";
 
 const DISK_TRANSITION_DURATION = 300;
-const INITIAL_DISK_COUNT = 6;
 const DISK_HEIGHT_PERCENT = 5.5; // "h-[5.5%]"" of container height
-const [GET, SET] = [0, 1] as const;
 
-type Disk = {
-  id: string;
-  isFlying: boolean;
-  peg: number;
-  order: number;
-  width: number | string;
-  color: string;
-};
-type Peg = Disk[];
-type Pegs = [Peg, Peg, Peg];
-type State = {
+export type State = {
   readonly disks: number;
-  isPlaying: Signal<boolean>;
+  isPlaying: boolean;
   pegs: Pegs;
   steps: Step[];
   moveDisk(): Promise<void>;
 };
 
-function newPegs(disks: number): Pegs {
-  const widthGrow = 100 / disks;
-
-  return [
-    range(disks, 0, -1).map((i, order) => ({
-      id: nanoid(),
-      isFlying: false,
-      peg: 0,
-      order,
-      width: `${i * widthGrow}%`,
-      color: getColor(order, disks),
-    })),
-    [],
-    [],
-  ];
-}
-
 function newState(disks: number): State {
   return {
     disks,
-    isPlaying: createSignal(false),
+    isPlaying: false,
     pegs: createMutable(newPegs(disks)),
     steps: [...getMemoizedTowerSolution(disks, 1, 3)].reverse(),
     async moveDisk() {
@@ -81,7 +50,7 @@ function newState(disks: number): State {
       disk.order = this.pegs[to - 1].length - 1;
 
       setTimeout(() => {
-        if (this.isPlaying[GET]()) {
+        if (this.isPlaying) {
           this.moveDisk();
         }
       }, 0);
@@ -93,56 +62,46 @@ function newState(disks: number): State {
   };
 }
 
-export function App() {
-  const [state, setState] = createSignal(newState(INITIAL_DISK_COUNT));
+export function App2D() {
+  const [state, setState] = createSignal(newState(navbarState.disks));
 
   function resetGame(disks: number) {
     batch(() => {
-      state().isPlaying[SET](false);
+      state().isPlaying = false; // Stop async animations
       setState(newState(disks));
     });
   }
 
+  onMount(() => {
+    function onStart() {
+      batch(() => {
+        if (state().isPlaying) {
+          resetGame(state().disks);
+          setNavbarState("isStarted", false);
+        } else {
+          setNavbarState("isStarted", true);
+          state().isPlaying = true;
+          state().moveDisk();
+        }
+      });
+    }
+
+    function onReset() {
+      resetGame(navbarState.disks);
+      setNavbarState("isStarted", false);
+    }
+
+    document.addEventListener("hanoistart", onStart);
+    document.addEventListener("hanoireset", onReset);
+
+    onCleanup(() => {
+      document.removeEventListener("hanoistart", onStart);
+      document.removeEventListener("hanoireset", onReset);
+    });
+  });
+
   return (
-    <main class="flex flex-col m-auto w-fit pt-8">
-      <h1 class="text-3xl sm:text-[5vw] text-center">Hanoi towers</h1>
-      <form
-        class="flex gap-8 mt-8 items-center"
-        onSubmit={(e) => {
-          e.preventDefault();
-
-          if (state().isPlaying[GET]()) {
-            resetGame(state().disks);
-          } else {
-            state().isPlaying[SET](true);
-            state().moveDisk();
-          }
-        }}
-      >
-        <button class="w-24">
-          {state().isPlaying[GET]() ? "Reset" : "Start"}
-        </button>
-
-        <label class="space-x-2 text-xl">
-          <span>Disks count:</span>
-          <input
-            class="w-16 p-2"
-            min={1}
-            max={13}
-            maxLength={2}
-            type="number"
-            name="disks"
-            value={INITIAL_DISK_COUNT}
-            onInput={debounce((event) => {
-              const value = event.target.value;
-              if (value) {
-                resetGame(Number(value));
-              }
-            })}
-            pattern="\d+"
-          />
-        </label>
-      </form>
+    <div class="flex flex-col m-auto w-fit pt-8">
       <div class="grid grid-cols-3 grid-rows-1 items-end justify-items-center relative w-[min(80vw,1200px)] [aspect-ratio:320/160] mx-auto border-b-4 border-slate-950 dark:border-slate-400 rounded-sm">
         <Peg disks={state().disks} />
         <Peg disks={state().disks} />
@@ -155,7 +114,7 @@ export function App() {
           {(disk) => <Disk disk={disk} />}
         </For>
       </div>
-    </main>
+    </div>
   );
 }
 

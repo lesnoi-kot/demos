@@ -663,6 +663,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tweenjs/tween.js@npm:~23.1.1":
+  version: 23.1.2
+  resolution: "@tweenjs/tween.js@npm:23.1.2"
+  checksum: 10c0/8fa754b5fd548750e8cc26a4094b46578ee376bf15e1942e042fb532f469dca31f41c48b4d582f1fabceafa705be31b83d11dd79401a518fbabd97d1472c87df
+  languageName: node
+  linkType: hard
+
 "@types/babel__core@npm:^7.20.4":
   version: 7.20.5
   resolution: "@types/babel__core@npm:7.20.5"
@@ -724,6 +731,33 @@ __metadata:
   dependencies:
     undici-types: "npm:~5.26.4"
   checksum: 10c0/2d86e5f2227aaa42212e82ea0affe72799111b888ff900916376450b02b09b963ca888b20d9c332d8d2b833ed4781987867a38eaa2e4863fa8439071468b0a6f
+  languageName: node
+  linkType: hard
+
+"@types/stats.js@npm:*":
+  version: 0.17.3
+  resolution: "@types/stats.js@npm:0.17.3"
+  checksum: 10c0/ccccc992c6dfe08fb85049aa3ce44ca7e428db8da4a3edd20298f1c8b72768021fa8bacdfbe8e9735a7552ee5d57f667c6f557050ad2d9a87b699b3566a6177a
+  languageName: node
+  linkType: hard
+
+"@types/three@npm:^0":
+  version: 0.165.0
+  resolution: "@types/three@npm:0.165.0"
+  dependencies:
+    "@tweenjs/tween.js": "npm:~23.1.1"
+    "@types/stats.js": "npm:*"
+    "@types/webxr": "npm:*"
+    fflate: "npm:~0.8.2"
+    meshoptimizer: "npm:~0.18.1"
+  checksum: 10c0/a7d922c5d50610047b55443e3e7ac91cebb424a4fb09294f34ee1d9fc24c3cb5261739ae41ef7fa5ce88584045c7ee885ca28a5b741bd45f93d9da8278ed2473
+  languageName: node
+  linkType: hard
+
+"@types/webxr@npm:*":
+  version: 0.5.16
+  resolution: "@types/webxr@npm:0.5.16"
+  checksum: 10c0/7df4f693c58dc15a6749f37dcf0d29dc72c8e63dc8a7b8990120b2ab3492ad998e6c23a9d175b34a31ced36612b94658b1d6a25abf26d22c9ef35bdce512bcc9
   languageName: node
   linkType: hard
 
@@ -1075,12 +1109,14 @@ __metadata:
   dependencies:
     "@types/lodash": "npm:^4"
     "@types/node": "npm:^20.14.2"
+    "@types/three": "npm:^0"
     autoprefixer: "npm:^10.4.19"
     lodash: "npm:^4.17.21"
     nanoid: "npm:^5.0.7"
     postcss: "npm:^8.4.38"
     solid-js: "npm:^1.8.15"
     tailwindcss: "npm:^3.4.4"
+    three: "npm:^0.165.0"
     typescript: "npm:^5.2.2"
     vite: "npm:^5.2.0"
     vite-plugin-solid: "npm:^2.10.2"
@@ -1273,6 +1309,13 @@ __metadata:
   dependencies:
     reusify: "npm:^1.0.4"
   checksum: 10c0/1095f16cea45fb3beff558bb3afa74ca7a9250f5a670b65db7ed585f92b4b48381445cd328b3d87323da81e43232b5d5978a8201bde84e0cd514310f1ea6da34
+  languageName: node
+  linkType: hard
+
+"fflate@npm:~0.8.2":
+  version: 0.8.2
+  resolution: "fflate@npm:0.8.2"
+  checksum: 10c0/03448d630c0a583abea594835a9fdb2aaf7d67787055a761515bf4ed862913cfd693b4c4ffd5c3f3b355a70cf1e19033e9ae5aedcca103188aaff91b8bd6e293
   languageName: node
   linkType: hard
 
@@ -1697,6 +1740,13 @@ __metadata:
   version: 1.4.1
   resolution: "merge2@npm:1.4.1"
   checksum: 10c0/254a8a4605b58f450308fc474c82ac9a094848081bf4c06778200207820e5193726dc563a0d2c16468810516a5c97d9d3ea0ca6585d23c58ccfff2403e8dbbeb
+  languageName: node
+  linkType: hard
+
+"meshoptimizer@npm:~0.18.1":
+  version: 0.18.1
+  resolution: "meshoptimizer@npm:0.18.1"
+  checksum: 10c0/8a825c58b20b65585e8d00788843929b60c66ba4297e89afaa49f7c51ab9a0f7b9130f90cc9ad1b9b48b3d1bee3beb1bc93608acba0d73e78995c3e6e5ca436b
   languageName: node
   linkType: hard
 
@@ -2499,6 +2549,13 @@ __metadata:
   dependencies:
     any-promise: "npm:^1.0.0"
   checksum: 10c0/f375aeb2b05c100a456a30bc3ed07ef03a39cbdefe02e0403fb714b8c7e57eeaad1a2f5c4ecfb9ce554ce3db9c2b024eba144843cd9e344566d9fcee73b04767
+  languageName: node
+  linkType: hard
+
+"three@npm:^0.165.0":
+  version: 0.165.0
+  resolution: "three@npm:0.165.0"
+  checksum: 10c0/235e52d4634c4fc400de7850af466fdcfaf70c621463a8d886b332faccfbc1c4f697cd67bf848da21e1b6e2fb3e7a153aafc217238ee50923b1a5ce7d47d3973
   languageName: node
   linkType: hard
 
