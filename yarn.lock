@@ -1111,6 +1111,7 @@ __metadata:
     "@types/node": "npm:^20.14.2"
     "@types/three": "npm:^0"
     autoprefixer: "npm:^10.4.19"
+    gsap: "npm:^3.12.5"
     lodash: "npm:^4.17.21"
     nanoid: "npm:^5.0.7"
     postcss: "npm:^8.4.38"
@@ -1447,6 +1448,13 @@ __metadata:
   version: 4.2.11
   resolution: "graceful-fs@npm:4.2.11"
   checksum: 10c0/386d011a553e02bc594ac2ca0bd6d9e4c22d7fa8cfbfc448a6d148c59ea881b092db9dbe3547ae4b88e55f1b01f7c4a2ecc53b310c042793e63aa44cf6c257f2
+  languageName: node
+  linkType: hard
+
+"gsap@npm:^3.12.5":
+  version: 3.12.5
+  resolution: "gsap@npm:3.12.5"
+  checksum: 10c0/cb38e89bd577fc18c9cf77e4aeb83617603b1e0fa768fe8ca1acd836fd852936722e186a88c9cf6ece42e53407edd45324be2bfe35a41f424c5f2c2b33fd1a98
   languageName: node
   linkType: hard
 

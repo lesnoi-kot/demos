@@ -1,6 +1,3 @@
-import type { Signal } from "solid-js";
-
-import type { Step } from "./solver";
 import { range } from "lodash";
 import { getColor } from "./utils";
 import { nanoid } from "nanoid";

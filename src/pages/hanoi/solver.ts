@@ -4,7 +4,11 @@ const [PEG_A, PEG_B, PEG_C] = [1, 2, 3];
 
 export type Step = [from: number, to: number];
 
-export function getTowerSolution(n: number, from: number, to: number): Step[] {
+export function getTowerSolution(
+  n: number,
+  from: number = PEG_A,
+  to: number = PEG_C
+): Step[] {
   if (n === 1) {
     return [[from, to]];
   }

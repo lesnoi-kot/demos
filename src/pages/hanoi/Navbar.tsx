@@ -1,7 +1,7 @@
 import { debounce } from "lodash";
 import { createStore } from "solid-js/store";
 
-const INITIAL_DISK_COUNT = 6;
+const INITIAL_DISK_COUNT = 5;
 
 type NavbarState = {
   isStarted: boolean;
