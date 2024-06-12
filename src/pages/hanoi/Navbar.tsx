@@ -5,12 +5,14 @@ const INITIAL_DISK_COUNT = 5;
 
 type NavbarState = {
   isStarted: boolean;
+  debug: boolean;
   disks: number;
   tab: "2D" | "3D";
 };
 
 export const [navbarState, setNavbarState] = createStore<NavbarState>({
   isStarted: false,
+  debug: true,
   disks: INITIAL_DISK_COUNT,
   tab: "3D",
 });
@@ -26,10 +28,9 @@ export function Navbar() {
     >
       <button class="w-24">{navbarState.isStarted ? "Reset" : "Start"}</button>
 
-      <div class="flex flex-row gap-2">
-        <label class="label cursor-pointer">
+      <div class="flex flex-row gap-4">
+        <label class="flex items-center">
           <input
-            class=""
             type="radio"
             name="tab"
             value="2D"
@@ -38,12 +39,11 @@ export function Navbar() {
               setNavbarState("tab", "2D");
             }}
           />
-          <span class="label-text ml-2">2D</span>
+          <span class="ml-2">2D</span>
         </label>
 
-        <label class="label cursor-pointer">
+        <label class="flex items-center">
           <input
-            class=""
             type="radio"
             name="tab"
             value="3D"
@@ -52,7 +52,7 @@ export function Navbar() {
               setNavbarState("tab", "3D");
             }}
           />
-          <span class="label-text ml-2">3D</span>
+          <span class="ml-2">3D</span>
         </label>
       </div>
 
@@ -74,6 +74,18 @@ export function Navbar() {
             }
           })}
           pattern="\d+"
+        />
+      </label>
+
+      <label class="space-x-2 text-xl flex items-center">
+        <span>Debug</span>
+        <input
+          type="checkbox"
+          name="debug"
+          checked={navbarState.debug}
+          onChange={(event) => {
+            setNavbarState("debug", !!event.target.checked);
+          }}
         />
       </label>
     </form>

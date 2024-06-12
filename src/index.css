@@ -12,10 +12,52 @@ body {
 
 @layer components {
   button {
-    @apply px-4 py-2 border-2 dark:border-slate-200 border-slate-900 rounded-sm;
+    @apply px-4 py-2 border-2 dark:border-slate-200 border-slate-900 rounded-lg;
   }
 
   button:hover {
-    @apply bg-slate-300 dark:bg-slate-700;
+    @apply bg-slate-200 dark:bg-slate-700;
+  }
+
+  input,
+  label:has(input) {
+    cursor: pointer;
+  }
+
+  label:has(> input[type="radio"]:checked) {
+    font-weight: bolder;
+  }
+
+  input[type="radio"],
+  input[type="checkbox"] {
+    appearance: none;
+    width: 1rem;
+    aspect-ratio: 1;
+    @apply border-2 dark:border-slate-100 border-slate-900;
+
+    &::before {
+      display: block;
+      content: "";
+      width: 0.5rem;
+      aspect-ratio: 1;
+      opacity: 0;
+      transform-origin: center;
+      transform: translate(25%, 25%);
+
+      background-color: currentColor;
+      transition: opacity 100ms linear;
+    }
+
+    &:checked::before {
+      opacity: 1;
+    }
+  }
+
+  input[type="radio"] {
+    @apply rounded-full;
+
+    &::before {
+      @apply rounded-full;
+    }
   }
 }
