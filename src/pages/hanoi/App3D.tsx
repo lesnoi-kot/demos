@@ -1,20 +1,32 @@
 /* @refresh reload */
 import { range, sample } from "lodash";
-import { onCleanup, onMount } from "solid-js";
+import {
+  Show,
+  createEffect,
+  createResource,
+  onCleanup,
+  onMount,
+} from "solid-js";
 import gsap from "gsap";
 import { nanoid } from "nanoid";
-
 import * as T from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
+import { GLTFLoader, type GLTF } from "three/addons/loaders/GLTFLoader.js";
 
 import { assertValue } from "@/utils/assert";
 import { promiseWithCancel } from "@/utils/async";
 
 import { getColor } from "./utils";
-import { navbarState, setNavbarState } from "./Navbar";
 import { getMemoizedTowerSolution, type Step } from "./solver";
+import { navbarState, setNavbarState } from "./Navbar";
 
-import tilePNG from "./assets/lab1_flr4.png";
+import sceneGLTF from "./assets/scene.glb?url";
+
+const gltfLoader = new GLTFLoader();
+let gltfScene: GLTF["scene"];
+
+const audioLoader = new T.AudioLoader();
+const glassSoftImpact: AudioBuffer[] = [];
 
 const renderer = new T.WebGLRenderer({
   alpha: true,
@@ -22,35 +34,33 @@ const renderer = new T.WebGLRenderer({
 });
 renderer.shadowMap.enabled = true;
 
-const loader = new T.TextureLoader();
-const audioLoader = new T.AudioLoader();
-
-const glassSoftImpact: AudioBuffer[] = [];
-
-[
-  "/sfx/glass_impact_soft1.wav",
-  "/sfx/glass_impact_soft2.wav",
-  "/sfx/glass_impact_soft3.wav",
-].forEach((path) => {
-  audioLoader.load(path, (buffer) => {
-    glassSoftImpact.push(buffer);
-  });
-});
-
-const textureLightnoise = loader.load("/lightnoise.png");
-textureLightnoise.colorSpace = T.SRGBColorSpace;
-
-const textureTile1 = loader.load(tilePNG);
-textureTile1.colorSpace = T.SRGBColorSpace;
-textureTile1.magFilter = T.NearestFilter;
-textureTile1.wrapS = T.RepeatWrapping;
-textureTile1.wrapT = T.RepeatWrapping;
-textureTile1.repeat.set(8, 8);
-
-const textureJade = loader.load("/jade.jpg");
-textureJade.colorSpace = T.SRGBColorSpace;
+const assetsLoadingPromise = Promise.all([
+  gltfLoader.loadAsync(sceneGLTF).then((gltf) => {
+    gltfScene = gltf.scene;
+  }),
+  ...range(1, 4)
+    .map((i) => `/sfx/glass_impact_soft${i}.wav`)
+    .map((path) =>
+      audioLoader.loadAsync(path).then((buffer) => {
+        glassSoftImpact.push(buffer);
+      })
+    ),
+]).then(() => true);
 
 export function App3D() {
+  const [completed] = createResource(() => assetsLoadingPromise);
+
+  return (
+    <Show
+      when={completed()}
+      fallback={<h2 class="text-3xl mt-2 text-center">Loading...</h2>}
+    >
+      <App3DScene />
+    </Show>
+  );
+}
+
+export function App3DScene() {
   let sceneContainerEl: HTMLDivElement;
   let animator: Animator;
 
@@ -64,13 +74,12 @@ export function App3D() {
   const sound = new T.Audio(listener);
   sound.setVolume(0.25);
 
-  // const controls = new OrbitControls(camera, renderer.domElement);
-  // controls.enableDamping = true;
-  // controls.dampingFactor = 0.25;
-  // controls.target.set(0, 5, 0);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.25;
+  controls.target.set(0, 5, 0);
 
   const scene = new T.Scene();
-  // scene.background = new Color(0x004477);
   setupScene(scene);
   scene.userData.sound = sound;
   const disksGroup = scene.getObjectByName("disks")!;
@@ -92,7 +101,7 @@ export function App3D() {
 
   function loop() {
     renderer.render(scene, camera);
-    // controls.update();
+    controls.update();
   }
 
   onMount(() => {
@@ -130,6 +139,22 @@ export function App3D() {
     renderer.setAnimationLoop(loop);
   });
 
+  createEffect(() => {
+    const debugGroup = scene.getObjectByName("debug")!;
+    controls.enabled = navbarState.debug;
+
+    if (navbarState.debug) {
+      debugGroup.add(
+        new T.AxesHelper(scene.userData.width),
+        ...scene
+          .getObjectsByProperty("type", "PointLight")
+          .map((light) => new T.PointLightHelper(light as T.PointLight))
+      );
+    } else {
+      debugGroup.clear();
+    }
+  });
+
   return (
     <main class="mt-4 flex flex-col m-auto w-fit pt-8">
       <div
@@ -146,77 +171,29 @@ const DISK_HEIGHT = 0.8;
 function setupScene(scene: T.Scene) {
   scene.userData.width = 10;
 
-  const ambientLight = new T.AmbientLight(0xffffff, 4);
-  ambientLight.position.y = 10;
+  gltfScene.rotateY(-Math.PI / 2);
+  gltfScene.receiveShadow = true;
+  gltfScene.getObjectByName("ground")!.receiveShadow = true;
+  gltfScene.getObjectByName("peg1")!.castShadow = true;
+  gltfScene.getObjectByName("peg2")!.castShadow = true;
+  gltfScene.getObjectByName("peg3")!.castShadow = true;
 
-  const spotLight = new T.PointLight(0xffffff, 25, 30, Math.PI / 5);
-  spotLight.castShadow = true;
-  spotLight.position.set(-5, 20, -2);
-  spotLight.lookAt(0, 0, 0);
+  const ambientLight = new T.AmbientLight(0xffffff, 3);
 
-  const pegs = new T.Group();
-  pegs.translateX(-scene.userData.width / 2);
-  pegs.add(...range(3).map((i) => makePeg((i * scene.userData.width) / 2)));
+  const mainLight = new T.PointLight(0xffffff, 25, 30, 1);
+  mainLight.castShadow = true;
+  mainLight.position.set(-5, 20, -2);
+  mainLight.lookAt(0, 0, 0);
 
-  const disks = new T.Group();
-  disks.name = "disks";
-  disks.translateX(-scene.userData.width / 2);
-  disks.translateY(DISK_HEIGHT);
+  const disksGroup = new T.Group();
+  disksGroup.name = "disks";
+  disksGroup.translateX(-scene.userData.width / 2);
+  disksGroup.translateY(DISK_HEIGHT);
 
-  const groundMaterial = new T.MeshStandardMaterial({
-    map: textureTile1,
-    side: T.DoubleSide,
-  });
-  const ground = new T.Mesh(new T.PlaneGeometry(20, 20), groundMaterial);
-  ground.rotateX(Math.PI / 2);
-  ground.receiveShadow = true;
+  const debugGroup = new T.Group();
+  debugGroup.name = "debug";
 
-  const textureTile2 = textureTile1.clone();
-  textureTile2.colorSpace = T.SRGBColorSpace;
-  textureTile2.magFilter = T.NearestFilter;
-  textureTile2.wrapS = T.RepeatWrapping;
-  textureTile2.wrapT = T.RepeatWrapping;
-  textureTile2.repeat.set(6, 2);
-  const groundMaterial2 = new T.MeshStandardMaterial({
-    map: textureTile2,
-    color: 0x00aa11,
-    transparent: true,
-    opacity: 0.5,
-  });
-  const ground2 = new T.Mesh(new T.PlaneGeometry(15, 5), groundMaterial2);
-  ground2.translateY(0.01);
-  ground2.rotateX(-Math.PI / 2);
-  ground2.receiveShadow = true;
-
-  scene.add(
-    // new GridHelper(scene.userData.width),
-    // new AxesHelper(scene.userData.width),
-    // new SpotLightHelper(spotLight),
-    // new PointLightHelper(spotLight),
-    ground,
-    ground2,
-    pegs,
-    disks,
-    ambientLight,
-    spotLight
-  );
-}
-
-textureJade.wrapS = T.RepeatWrapping;
-textureJade.wrapT = T.RepeatWrapping;
-textureJade.repeat.set(1, 2);
-
-const pegMaterial = new T.MeshPhysicalMaterial({
-  map: textureJade,
-});
-const pegGeometry = new T.CylinderGeometry(PEG_RADIUS, PEG_RADIUS, 7);
-function makePeg(x: number = 0) {
-  const obj = new T.Mesh(pegGeometry, pegMaterial);
-  obj.position.x = x;
-  obj.translateY(3.5);
-  obj.receiveShadow = true;
-  obj.castShadow = true;
-  return obj;
+  scene.add(gltfScene, disksGroup, debugGroup, ambientLight, mainLight);
 }
 
 function makeDisks(sceneWidth: number, disks: number) {
@@ -256,6 +233,7 @@ function makeDisk(x: number, y: number, r: number, color: T.Color) {
     opacity: 0.9,
   });
   const obj = new T.Mesh(g, m);
+  obj.userData.size = r;
   obj.name = nanoid();
   obj.position.set(x, y, 0);
   obj.castShadow = true;
@@ -305,6 +283,7 @@ class Animator {
         })
         .then(() => {
           this.scene.userData.sound.setBuffer(sample(glassSoftImpact));
+          this.scene.userData.sound.setDetune((2 - disk.userData.size) * 300);
           this.scene.userData.sound.play();
         });
       try {

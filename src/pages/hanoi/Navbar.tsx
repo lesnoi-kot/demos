@@ -12,7 +12,7 @@ type NavbarState = {
 
 export const [navbarState, setNavbarState] = createStore<NavbarState>({
   isStarted: false,
-  debug: true,
+  debug: false,
   disks: INITIAL_DISK_COUNT,
   tab: "3D",
 });
