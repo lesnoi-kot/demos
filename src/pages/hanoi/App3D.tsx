@@ -64,9 +64,9 @@ export function App3DScene() {
   let sceneContainerEl: HTMLDivElement;
   let animator: Animator;
 
-  const camera = new T.PerspectiveCamera(75, 1, 0.1, 50);
-  camera.position.set(0, 7, 11);
-  camera.lookAt(0, 0, -18);
+  const camera = new T.PerspectiveCamera(65, 16 / 9, 0.1, 50);
+  camera.position.set(0, 5, 11);
+  camera.lookAt(0, 0, 0);
 
   const listener = new T.AudioListener();
   camera.add(listener);
@@ -166,7 +166,7 @@ export function App3DScene() {
 }
 
 const PEG_RADIUS = 0.25;
-const DISK_HEIGHT = 0.8;
+const DISK_HEIGHT = 0.6;
 
 function setupScene(scene: T.Scene) {
   scene.userData.width = 10;
@@ -174,6 +174,7 @@ function setupScene(scene: T.Scene) {
   gltfScene.rotateY(-Math.PI / 2);
   gltfScene.receiveShadow = true;
   gltfScene.getObjectByName("ground")!.receiveShadow = true;
+  gltfScene.getObjectByName("ground")!.castShadow = true;
   gltfScene.getObjectByName("peg1")!.castShadow = true;
   gltfScene.getObjectByName("peg2")!.castShadow = true;
   gltfScene.getObjectByName("peg3")!.castShadow = true;
