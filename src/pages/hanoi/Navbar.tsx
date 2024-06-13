@@ -1,4 +1,4 @@
-import { debounce } from "lodash";
+import { clamp } from "lodash";
 import { createStore } from "solid-js/store";
 
 const INITIAL_DISK_COUNT = 5;
@@ -20,7 +20,7 @@ export const [navbarState, setNavbarState] = createStore<NavbarState>({
 export function Navbar() {
   return (
     <form
-      class="flex gap-8 mt-8 items-center"
+      class="flex gap-4 px-2 sm:gap-8 mt-8 items-center justify-center"
       onSubmit={(e) => {
         e.preventDefault();
         document.dispatchEvent(new CustomEvent("hanoistart"));
@@ -28,7 +28,7 @@ export function Navbar() {
     >
       <button class="w-24">{navbarState.isStarted ? "Reset" : "Start"}</button>
 
-      <div class="flex flex-row gap-4">
+      {/* <div class="flex flex-row gap-4">
         <label class="flex items-center">
           <input
             type="radio"
@@ -54,25 +54,31 @@ export function Navbar() {
           />
           <span class="ml-2">3D</span>
         </label>
-      </div>
+      </div> */}
 
       <label class="space-x-2 text-xl">
         <span>Disks count:</span>
         <input
-          class="w-16 p-2"
+          class="w-[5ch] py-1 text-center"
           min={1}
           max={13}
           maxLength={2}
           type="number"
           name="disks"
           value={INITIAL_DISK_COUNT}
-          onInput={debounce((event) => {
+          onInput={(event) => {
             const value = event.target.value;
             if (value) {
-              setNavbarState("disks", Number(event.target.value));
+              const clamped = clamp(
+                Number(event.target.value),
+                Number(event.target.min),
+                Number(event.target.max)
+              );
+              event.target.value = String(clamped);
+              setNavbarState("disks", clamped);
               document.dispatchEvent(new CustomEvent("hanoireset"));
             }
-          })}
+          }}
           pattern="\d+"
         />
       </label>

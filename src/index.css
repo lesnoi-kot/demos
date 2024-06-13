@@ -11,17 +11,27 @@ body {
 }
 
 @layer components {
-  button {
-    @apply px-4 py-2 border-2 dark:border-slate-200 border-slate-900 rounded-lg;
+  a {
+    color: theme("colors.blue.700");
+
+    &:hover {
+      color: theme("colors.blue.600");
+      text-decoration: underline dashed;
+    }
   }
 
-  button:hover {
-    @apply bg-slate-200 dark:bg-slate-700;
+  button {
+    @apply px-4 py-2 border-2 dark:border-slate-200 border-slate-900 rounded-lg;
+
+    &:hover {
+      @apply bg-slate-100 dark:bg-slate-700;
+    }
   }
 
   input,
   label:has(input) {
     cursor: pointer;
+    background: unset;
   }
 
   label:has(> input[type="radio"]:checked) {
@@ -34,6 +44,10 @@ body {
     width: 1rem;
     aspect-ratio: 1;
     @apply border-2 dark:border-slate-100 border-slate-900;
+
+    &:hover {
+      @apply bg-slate-100 dark:bg-slate-700;
+    }
 
     &::before {
       display: block;

@@ -10,8 +10,8 @@ import {
 import gsap from "gsap";
 import { nanoid } from "nanoid";
 import * as T from "three";
-import { OrbitControls } from "three/examples/jsm/Addons.js";
 import { GLTFLoader, type GLTF } from "three/addons/loaders/GLTFLoader.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import { assertValue } from "@/utils/assert";
 import { promiseWithCancel } from "@/utils/async";
@@ -22,21 +22,30 @@ import { navbarState, setNavbarState } from "./Navbar";
 
 import sceneGLTF from "./assets/scene.glb?url";
 
+const ASPECT = 16 / 9;
+
 const gltfLoader = new GLTFLoader();
 let gltfScene: GLTF["scene"];
 
 const audioLoader = new T.AudioLoader();
 const glassSoftImpact: AudioBuffer[] = [];
 
+const textureLoader = new T.TextureLoader();
+let bgTexture: T.Texture;
+
 const renderer = new T.WebGLRenderer({
   alpha: true,
   antialias: true,
 });
-renderer.shadowMap.enabled = true;
+renderer.setPixelRatio(window.devicePixelRatio);
 
 const assetsLoadingPromise = Promise.all([
   gltfLoader.loadAsync(sceneGLTF).then((gltf) => {
     gltfScene = gltf.scene;
+    gltfScene.rotateY(-Math.PI / 2);
+  }),
+  textureLoader.loadAsync("/spheremap.jpg").then((texture) => {
+    bgTexture = texture;
   }),
   ...range(1, 4)
     .map((i) => `/sfx/glass_impact_soft${i}.wav`)
@@ -53,7 +62,7 @@ export function App3D() {
   return (
     <Show
       when={completed()}
-      fallback={<h2 class="text-3xl mt-2 text-center">Loading...</h2>}
+      fallback={<h2 class="text-3xl mt-14 text-center">Loading...</h2>}
     >
       <App3DScene />
     </Show>
@@ -64,7 +73,7 @@ export function App3DScene() {
   let sceneContainerEl: HTMLDivElement;
   let animator: Animator;
 
-  const camera = new T.PerspectiveCamera(65, 16 / 9, 0.1, 50);
+  const camera = new T.PerspectiveCamera(65, ASPECT, 0.1, 50);
   camera.position.set(0, 5, 11);
   camera.lookAt(0, 0, 0);
 
@@ -82,6 +91,7 @@ export function App3DScene() {
   const scene = new T.Scene();
   setupScene(scene);
   scene.userData.sound = sound;
+  scene.background = bgTexture;
   const disksGroup = scene.getObjectByName("disks")!;
 
   function resetState() {
@@ -128,14 +138,30 @@ export function App3DScene() {
       setNavbarState("isStarted", false);
     }
 
+    function onResize() {
+      if (renderer.domElement.clientWidth === sceneContainerEl.clientWidth) {
+        return;
+      }
+      renderer.setSize(
+        sceneContainerEl.clientWidth,
+        (sceneContainerEl.clientWidth * 1) / ASPECT
+      );
+    }
+
     document.addEventListener("hanoistart", onStart);
     document.addEventListener("hanoireset", onReset);
+    window.addEventListener("resize", onResize);
 
     onCleanup(() => {
       document.removeEventListener("hanoistart", onStart);
       document.removeEventListener("hanoireset", onReset);
+      window.removeEventListener("resize", onResize);
     });
 
+    renderer.setSize(
+      sceneContainerEl.clientWidth,
+      (sceneContainerEl.clientWidth * 1) / ASPECT
+    );
     renderer.setAnimationLoop(loop);
   });
 
@@ -156,11 +182,8 @@ export function App3DScene() {
   });
 
   return (
-    <main class="mt-4 flex flex-col m-auto w-fit pt-8">
-      <div
-        ref={sceneContainerEl!}
-        class="w-[320px] sm:w-[600px] aspect-video bg-[url('/spheremap.jpg')] [background-position-y:60%]"
-      />
+    <main class="mt-8">
+      <div ref={sceneContainerEl!} class="max-w-xl w-full mx-auto" />
     </main>
   );
 }
@@ -170,19 +193,9 @@ const DISK_HEIGHT = 0.6;
 
 function setupScene(scene: T.Scene) {
   scene.userData.width = 10;
-
-  gltfScene.rotateY(-Math.PI / 2);
-  gltfScene.receiveShadow = true;
-  gltfScene.getObjectByName("ground")!.receiveShadow = true;
-  gltfScene.getObjectByName("ground")!.castShadow = true;
-  gltfScene.getObjectByName("peg1")!.castShadow = true;
-  gltfScene.getObjectByName("peg2")!.castShadow = true;
-  gltfScene.getObjectByName("peg3")!.castShadow = true;
-
   const ambientLight = new T.AmbientLight(0xffffff, 3);
 
   const mainLight = new T.PointLight(0xffffff, 25, 30, 1);
-  mainLight.castShadow = true;
   mainLight.position.set(-5, 20, -2);
   mainLight.lookAt(0, 0, 0);
 
@@ -237,8 +250,6 @@ function makeDisk(x: number, y: number, r: number, color: T.Color) {
   obj.userData.size = r;
   obj.name = nanoid();
   obj.position.set(x, y, 0);
-  obj.castShadow = true;
-  obj.receiveShadow = true;
   return obj;
 }
 
