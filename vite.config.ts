@@ -17,6 +17,7 @@ export default defineConfig({
       input: {
         main: resolveRoot("index.html"),
         hanoi: resolveRoot("pages/hanoi/index.html"),
+        skyboxes: resolveRoot("pages/skyboxes/index.html"),
       },
       output: {
         manualChunks(id) {
