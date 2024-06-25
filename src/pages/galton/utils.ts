@@ -13,6 +13,9 @@ export function checkCirclesCollision(
 }
 
 export function checkBallAndPinCollision(ball: Ball, pin: Pin): boolean {
+  if (ball.collidedPins.has(pin.id)) {
+    return false;
+  }
   const dx = ball.position.x - pin.position.x;
   const dy = ball.position.z - pin.position.z;
   return Math.sqrt(dx * dx + dy * dy) <= pin.r + ball.r;

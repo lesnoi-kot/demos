@@ -62,7 +62,7 @@ function GaltonScene() {
   const board = galtonBoard(1, 1, 6);
   scene.add(board);
 
-  const gravity = new T.Vector3(0, 0, 0.4);
+  const gravity = new T.Vector3(0, 0, 9.81);
   const balls: Ball[] = [];
   let ballSpawnTime = performance.now();
   let lastTime = performance.now();
@@ -72,37 +72,43 @@ function GaltonScene() {
     lastTime = time;
 
     for (const ball of balls) {
-      ball.velocity.add(gravity);
-      ball.velocity.x *= 0.975;
+      ball.velocity.addScaledVector(gravity, dt);
+      if (ball.velocity.x !== 0) {
+        const airDrag = new T.Vector3(-Math.sign(ball.velocity.x), 0, 0);
+        ball.velocity.addScaledVector(airDrag, dt);
+      }
+
       ball.position.addScaledVector(ball.velocity, dt);
-      ball.position.z = Math.min(board.planeHeight - ball.r, ball.position.z);
+      if (ball.position.z > board.planeHeight - ball.r) {
+        ball.position.z = board.planeHeight - ball.r;
+      }
 
       for (let pin of board.pins.children as Pin[]) {
-        if (checkBallAndPinCollision(ball, pin)) {
-          // console.log("HIT");
-          // ball.velocity.set(ball.velocity.x, ball.velocity.y, ball.velocity.z);
+        if (
+          checkBallAndPinCollision(ball, pin) &&
+          ball.position.z < pin.position.z
+        ) {
           ball.position.z = pin.position.z - ball.r - pin.r - 0.01;
-          const l = ball.velocity.length();
+          ball.position.x = pin.position.x;
 
-          ball.velocity.z *= -1;
-          ball.velocity.x = (Math.random() < 0.5 ? 1 : -1) * 3;
-
-          // ball.velocity
-          // .multiplyScalar(-1)
-          // .set(
-          //   l * Math.cos(Math.PI / 4),
-          //   ball.velocity.y,
-          //   l * Math.sin(Math.PI / 4),
-          // );
-          // .multiplyScalar(0.5);
+          const t = 1;
+          ball.velocity.x =
+            ((Math.random() < 0.5 ? 1 : -1) * (board.l - (-1 * t ** 2) / 2)) /
+            t;
+          ball.velocity.z = (1.75 * board.h - (gravity.z * t ** 2) / 2) / t;
+          ball.collidedPins.add(pin.id);
           break;
         }
       }
+
+      if (Math.abs(ball.velocity.x) < 0.01) {
+        ball.velocity.x = 0;
+      }
     }
 
-    if (balls.length < 1 && time - ballSpawnTime >= 1000) {
+    if (balls.length < 30 && time - ballSpawnTime >= 500) {
       ballSpawnTime = time;
-      const ball = new Ball(0, 0, -5, Math.min(board.l, board.h) / 4);
+      const ball = new Ball(0, 0, -5, Math.min(board.l, board.h) / 6);
       balls.push(ball);
       scene.add(ball);
     }

@@ -43,6 +43,7 @@ export class Ball extends T.Mesh {
   static ballMaterial = new T.MeshBasicMaterial({ color: 0x33ff11 });
 
   velocity = new T.Vector3(0, 0, 3);
+  collidedPins: Set<number> = new Set();
 
   constructor(x: number, y: number, z: number, public r: number) {
     super(new T.SphereGeometry(r), Ball.ballMaterial);
