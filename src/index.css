@@ -12,10 +12,10 @@ body {
 
 @layer components {
   a {
-    color: theme("colors.blue.700");
+    @apply text-blue-700 dark:text-blue-400;
 
     &:hover {
-      color: theme("colors.blue.600");
+      @apply text-blue-600 dark:text-blue-300;
       text-decoration: underline dashed;
     }
   }
