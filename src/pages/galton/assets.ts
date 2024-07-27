@@ -4,6 +4,7 @@ import plywoodImage from "./plywood/Wood_Plywood_Front_001_basecolor.jpg";
 import plywoodNormalImage from "./plywood/Wood_Plywood_Front_001_normal.jpg";
 
 import aluminiumImage from "./aluminium.jpg";
+
 import osbImage from "./Wood_Particle_Board_003_SD/Wood_Particle_Board_003_basecolor.jpg";
 import osbNormalImage from "./Wood_Particle_Board_003_SD/Wood_Particle_Board_003_normal.jpg";
 import osbAOImage from "./Wood_Particle_Board_003_SD/Wood_Particle_Board_003_ambientOcclusion.jpg";
@@ -25,6 +26,7 @@ export let woodAOMap: T.Texture;
 export let plywoodTexture: T.Texture;
 export let plywoodNormalMap: T.Texture;
 
+export let glassNormalMap: T.Texture;
 export let aluminiumTexture: T.Texture;
 
 export const assetsLoadingPromise = Promise.all([
@@ -67,6 +69,12 @@ export const assetsLoadingPromise = Promise.all([
 
   textureLoader.loadAsync(aluminiumImage).then((texture) => {
     aluminiumTexture = texture;
+  }),
+
+  textureLoader.loadAsync("/Glass_normal.jpg").then((texture) => {
+    glassNormalMap = texture;
+    glassNormalMap.wrapS = glassNormalMap.wrapT = T.RepeatWrapping;
+    glassNormalMap.repeat.set(2, 2);
   }),
 ]).then(() => true);
 

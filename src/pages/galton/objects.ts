@@ -11,6 +11,7 @@ import {
   woodNormalMap,
   woodAOMap,
   osbAOMap,
+  glassNormalMap,
 } from "./assets";
 import { woodenMaterial } from "./materials";
 
@@ -42,16 +43,17 @@ export class Board extends T.Group {
 
     const glass = new T.Mesh(
       new T.PlaneGeometry(this.planeWidth, this.planeHeight),
-      new T.MeshPhongMaterial({
-        // map: osbTexture,
-        // normalMap: osbNormalMap,
-        color: 0xffffff,
+      new T.MeshPhysicalMaterial({
+        normalMap: glassNormalMap,
         transparent: true,
-        // refractionRatio: 100,
-        opacity: 0.1,
-        // shininess: 100,
-        // reflectivity: 100,
+        opacity: 0.5,
+        reflectivity: 0.75,
         side: T.DoubleSide,
+        metalness: 0,
+        roughness: 0.1,
+        transmission: 0.95,
+        clearcoat: 1,
+        clearcoatRoughness: 0.3,
       }),
     );
     glass.translateY(1);
@@ -113,6 +115,7 @@ export class Board extends T.Group {
 
     const bell = new BellCurve(this.planeWidth, n);
     bell.translateZ(this.planeHeight - this.fallHeight);
+    bell.translateY(1.1);
     bell.rotateX(-Math.PI / 2);
 
     this.pins.translateY(Pin.height / 2);
@@ -253,12 +256,13 @@ export class ProgressBar extends T.Mesh {
   constructor(x: number, y: number, z: number, public width: number) {
     super(ProgressBar.barGeometry, ProgressBar.barMaterial);
     this.position.set(x, y, z);
-
     this.rescale();
+    this.visible = false;
   }
 
   increase(dh: number) {
     this.height += dh;
+    this.visible = true;
     this.rescale();
   }
 
@@ -283,12 +287,15 @@ export class BellCurve extends T.Mesh {
     }
     shape.closePath();
 
-    const g = new T.ExtrudeGeometry(shape, { depth: 0.1, bevelEnabled: false });
-    const material = new T.MeshBasicMaterial({
+    const g = new T.ExtrudeGeometry(shape, {
+      depth: 0.05,
+      bevelEnabled: false,
+    });
+    const material = new T.MeshPhongMaterial({
       color: 0x00aaff,
       opacity: 0.15,
       transparent: true,
-      // side: T.DoubleSide,
+      side: T.DoubleSide,
     });
     super(g, material);
   }
