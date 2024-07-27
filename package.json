@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --open",
     "build": "tsc && vite build && mv dist/src/pages/* dist/ && rmdir dist/src/pages && rmdir dist/src",
+    "fmt": "prettier --write \"**/*.{js,ts,tsx}\"",
     "preview": "vite preview"
   },
   "dependencies": {

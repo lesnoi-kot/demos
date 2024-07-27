@@ -18,5 +18,5 @@ render(
       <App3D />
     </main>
   ),
-  document.getElementById("root")!
+  document.getElementById("root")!,
 );

@@ -98,7 +98,6 @@ function setupScene(scene: T.Scene) {
     new T.AxesHelper(100),
     new T.PointLightHelper(pointLight),
     ambientLight,
-    pointLight
+    pointLight,
   );
-  scene.add(gltfScene);
 }

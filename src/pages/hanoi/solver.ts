@@ -7,7 +7,7 @@ export type Step = [from: number, to: number];
 export function getTowerSolution(
   n: number,
   from: number = PEG_A,
-  to: number = PEG_C
+  to: number = PEG_C,
 ): Step[] {
   if (n === 1) {
     return [[from, to]];

@@ -24,7 +24,11 @@ export class Board extends T.Group {
   progress = new T.Group();
   walls = new T.Group();
 
-  constructor(public h: number, public l: number, public n: number) {
+  constructor(
+    public h: number,
+    public l: number,
+    public n: number,
+  ) {
     super();
     this.planeHeight = n * h + this.fallHeight + this.slotHeight;
     this.planeWidth = (n + 1) * 2 * l + 0.5;
@@ -234,7 +238,12 @@ export class Ball extends T.Mesh {
   isRemoved: boolean = false;
   collidedPins: Set<number> = new Set();
 
-  constructor(x: number, y: number, z: number, public r: number) {
+  constructor(
+    x: number,
+    y: number,
+    z: number,
+    public r: number,
+  ) {
     super(new T.SphereGeometry(r), Ball.ballMaterial);
     this.position.set(x, y, z);
     this.translateY(1.5 * r);
@@ -243,7 +252,7 @@ export class Ball extends T.Mesh {
 
 export class ProgressBar extends T.Mesh {
   static barGeometry = new T.BoxGeometry(1, 1, 1);
-  static barMaterial = new T.MeshPhongMaterial({
+  static barMaterial = new T.MeshBasicMaterial({
     color: 0x558855,
   });
 
@@ -253,7 +262,12 @@ export class ProgressBar extends T.Mesh {
 
   height: number = 0;
 
-  constructor(x: number, y: number, z: number, public width: number) {
+  constructor(
+    x: number,
+    y: number,
+    z: number,
+    public width: number,
+  ) {
     super(ProgressBar.barGeometry, ProgressBar.barMaterial);
     this.position.set(x, y, z);
     this.rescale();

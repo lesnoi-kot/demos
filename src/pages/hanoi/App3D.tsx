@@ -52,7 +52,7 @@ const assetsLoadingPromise = Promise.all([
     .map((path) =>
       audioLoader.loadAsync(path).then((buffer) => {
         glassSoftImpact.push(buffer);
-      })
+      }),
     ),
 ]).then(() => true);
 
@@ -105,7 +105,7 @@ export function App3DScene() {
     animator = new Animator(
       scene,
       [disks.map((disk) => disk.name), [], []],
-      navbarState.disks
+      navbarState.disks,
     );
   }
 
@@ -119,7 +119,7 @@ export function App3DScene() {
 
     renderer.setSize(
       sceneContainerEl.clientWidth,
-      sceneContainerEl.clientHeight
+      sceneContainerEl.clientHeight,
     );
     sceneContainerEl.appendChild(renderer.domElement);
 
@@ -144,7 +144,7 @@ export function App3DScene() {
       }
       renderer.setSize(
         sceneContainerEl.clientWidth,
-        (sceneContainerEl.clientWidth * 1) / ASPECT
+        (sceneContainerEl.clientWidth * 1) / ASPECT,
       );
     }
 
@@ -160,7 +160,7 @@ export function App3DScene() {
 
     renderer.setSize(
       sceneContainerEl.clientWidth,
-      (sceneContainerEl.clientWidth * 1) / ASPECT
+      (sceneContainerEl.clientWidth * 1) / ASPECT,
     );
     renderer.setAnimationLoop(loop);
   });
@@ -174,7 +174,7 @@ export function App3DScene() {
         new T.AxesHelper(scene.userData.width),
         ...scene
           .getObjectsByProperty("type", "PointLight")
-          .map((light) => new T.PointLightHelper(light as T.PointLight))
+          .map((light) => new T.PointLightHelper(light as T.PointLight)),
       );
     } else {
       debugGroup.clear();
@@ -197,7 +197,6 @@ function setupScene(scene: T.Scene) {
 
   const mainLight = new T.PointLight(0xffffff, 25, 30, 1);
   mainLight.position.set(-5, 20, -2);
-  mainLight.lookAt(0, 0, 0);
 
   const disksGroup = new T.Group();
   disksGroup.name = "disks";
@@ -217,8 +216,8 @@ function makeDisks(sceneWidth: number, disks: number) {
       0,
       i * DISK_HEIGHT,
       PEG_RADIUS + (w / disks) * k,
-      new T.Color(getColor(i, disks))
-    )
+      new T.Color(getColor(i, disks)),
+    ),
   );
 }
 
@@ -262,7 +261,7 @@ class Animator {
   constructor(
     private scene: T.Scene,
     private pegs: [string[], string[], string[]],
-    disks: number
+    disks: number,
   ) {
     this.steps = getMemoizedTowerSolution(disks);
     this.timeline = gsap.timeline();

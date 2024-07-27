@@ -72,7 +72,7 @@ export function Navbar() {
               const clamped = clamp(
                 Number(event.target.value),
                 Number(event.target.min),
-                Number(event.target.max)
+                Number(event.target.max),
               );
               event.target.value = String(clamped);
               setNavbarState("disks", clamped);

@@ -6,7 +6,7 @@ export function assert(expr: boolean, msg: string = "Assertion error") {
 
 export function assertValue<T>(
   value: T,
-  msg: string = "Assertion error"
+  msg: string = "Assertion error",
 ): asserts value is NonNullable<T> | never {
   if (!value) {
     throw new Error(msg);
