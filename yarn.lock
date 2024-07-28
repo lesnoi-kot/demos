@@ -278,6 +278,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dimforge/rapier3d@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "@dimforge/rapier3d@npm:0.14.0"
+  checksum: 10c0/97837d11697342826c75f4ccafce6f484e47e71823411526150c4c08b64fc77dc91d993e1a40934f1c69976824f8215fac0632b50a1056709536087d89676f64
+  languageName: node
+  linkType: hard
+
 "@esbuild/aix-ppc64@npm:0.21.5":
   version: 0.21.5
   resolution: "@esbuild/aix-ppc64@npm:0.21.5"
@@ -551,6 +558,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rollup/plugin-virtual@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@rollup/plugin-virtual@npm:3.0.2"
+  peerDependencies:
+    rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+  peerDependenciesMeta:
+    rollup:
+      optional: true
+  checksum: 10c0/7115edb7989096d1ce334939fcf6e1ba365586b487bf61b2dd4f915386197f350db70904030342c0720fe58f5a52828975c645c4d415c1d432d9b1b6760a22ef
+  languageName: node
+  linkType: hard
+
 "@rollup/rollup-android-arm-eabi@npm:4.18.0":
   version: 4.18.0
   resolution: "@rollup/rollup-android-arm-eabi@npm:4.18.0"
@@ -660,6 +679,138 @@ __metadata:
   version: 4.18.0
   resolution: "@rollup/rollup-win32-x64-msvc@npm:4.18.0"
   conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@swc/core-darwin-arm64@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@swc/core-darwin-arm64@npm:1.7.2"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@swc/core-darwin-x64@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@swc/core-darwin-x64@npm:1.7.2"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-arm-gnueabihf@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.7.2"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-arm64-gnu@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.7.2"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-arm64-musl@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@swc/core-linux-arm64-musl@npm:1.7.2"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-x64-gnu@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@swc/core-linux-x64-gnu@npm:1.7.2"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-x64-musl@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@swc/core-linux-x64-musl@npm:1.7.2"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@swc/core-win32-arm64-msvc@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.7.2"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@swc/core-win32-ia32-msvc@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.7.2"
+  conditions: os=win32 & cpu=ia32
+  languageName: node
+  linkType: hard
+
+"@swc/core-win32-x64-msvc@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@swc/core-win32-x64-msvc@npm:1.7.2"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@swc/core@npm:^1.7.0":
+  version: 1.7.2
+  resolution: "@swc/core@npm:1.7.2"
+  dependencies:
+    "@swc/core-darwin-arm64": "npm:1.7.2"
+    "@swc/core-darwin-x64": "npm:1.7.2"
+    "@swc/core-linux-arm-gnueabihf": "npm:1.7.2"
+    "@swc/core-linux-arm64-gnu": "npm:1.7.2"
+    "@swc/core-linux-arm64-musl": "npm:1.7.2"
+    "@swc/core-linux-x64-gnu": "npm:1.7.2"
+    "@swc/core-linux-x64-musl": "npm:1.7.2"
+    "@swc/core-win32-arm64-msvc": "npm:1.7.2"
+    "@swc/core-win32-ia32-msvc": "npm:1.7.2"
+    "@swc/core-win32-x64-msvc": "npm:1.7.2"
+    "@swc/counter": "npm:^0.1.3"
+    "@swc/types": "npm:^0.1.12"
+  peerDependencies:
+    "@swc/helpers": "*"
+  dependenciesMeta:
+    "@swc/core-darwin-arm64":
+      optional: true
+    "@swc/core-darwin-x64":
+      optional: true
+    "@swc/core-linux-arm-gnueabihf":
+      optional: true
+    "@swc/core-linux-arm64-gnu":
+      optional: true
+    "@swc/core-linux-arm64-musl":
+      optional: true
+    "@swc/core-linux-x64-gnu":
+      optional: true
+    "@swc/core-linux-x64-musl":
+      optional: true
+    "@swc/core-win32-arm64-msvc":
+      optional: true
+    "@swc/core-win32-ia32-msvc":
+      optional: true
+    "@swc/core-win32-x64-msvc":
+      optional: true
+  peerDependenciesMeta:
+    "@swc/helpers":
+      optional: true
+  checksum: 10c0/fa07d7fce91a36554b468af9eceba599b94d2ae68a6a3756566bc03a33726f994ba6be419b8f50d543950442e8caa41738d547a9d2ee41d11f65332d6f6f6cb1
+  languageName: node
+  linkType: hard
+
+"@swc/counter@npm:^0.1.3":
+  version: 0.1.3
+  resolution: "@swc/counter@npm:0.1.3"
+  checksum: 10c0/8424f60f6bf8694cfd2a9bca45845bce29f26105cda8cf19cdb9fd3e78dc6338699e4db77a89ae449260bafa1cc6bec307e81e7fb96dbf7dcfce0eea55151356
+  languageName: node
+  linkType: hard
+
+"@swc/types@npm:^0.1.12":
+  version: 0.1.12
+  resolution: "@swc/types@npm:0.1.12"
+  dependencies:
+    "@swc/counter": "npm:^0.1.3"
+  checksum: 10c0/f95fea7dee8fc07f8389afbb9578f3d0cd84b429b1d0dbff7fd99b2ef06ed88e96bc33631f36c3bc0505d5a783bee1374acd84b8fc2593001219b6c2caba241b
   languageName: node
   linkType: hard
 
@@ -1125,6 +1276,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "demos@workspace:."
   dependencies:
+    "@dimforge/rapier3d": "npm:^0.14.0"
     "@types/lodash": "npm:^4"
     "@types/node": "npm:^20.14.2"
     "@types/three": "npm:^0"
@@ -1140,6 +1292,8 @@ __metadata:
     typescript: "npm:^5.2.2"
     vite: "npm:^5.3.4"
     vite-plugin-solid: "npm:^2.10.2"
+    vite-plugin-top-level-await: "npm:^1.4.2"
+    vite-plugin-wasm: "npm:^3.3.0"
     vite-tsconfig-paths: "npm:^4.3.2"
   languageName: unknown
   linkType: soft
@@ -2769,6 +2923,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uuid@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "uuid@npm:10.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 10c0/eab18c27fe4ab9fb9709a5d5f40119b45f2ec8314f8d4cf12ce27e4c6f4ffa4a6321dc7db6c515068fa373c075b49691ba969f0010bf37f44c37ca40cd6bf7fe
+  languageName: node
+  linkType: hard
+
 "validate-html-nesting@npm:^1.2.1":
   version: 1.2.2
   resolution: "validate-html-nesting@npm:1.2.2"
@@ -2794,6 +2957,28 @@ __metadata:
     "@testing-library/jest-dom":
       optional: true
   checksum: 10c0/872a9d63d9d1ada29921de37f7420b0636ae7bc4c596072da0f098d03d932dee38b9e5f6ce88b42b4d3b19c9f06ceffcb86a335d2752784da18ca2827bf8ee56
+  languageName: node
+  linkType: hard
+
+"vite-plugin-top-level-await@npm:^1.4.2":
+  version: 1.4.2
+  resolution: "vite-plugin-top-level-await@npm:1.4.2"
+  dependencies:
+    "@rollup/plugin-virtual": "npm:^3.0.2"
+    "@swc/core": "npm:^1.7.0"
+    uuid: "npm:^10.0.0"
+  peerDependencies:
+    vite: ">=2.8"
+  checksum: 10c0/02247e97af087e6f9b153e99e857a260f88d76c4fa121dec84d3a93619b43a1cdf83cbeb71edddb83458452c48b74caf45014b6043e080a30febd670378c73a6
+  languageName: node
+  linkType: hard
+
+"vite-plugin-wasm@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "vite-plugin-wasm@npm:3.3.0"
+  peerDependencies:
+    vite: ^2 || ^3 || ^4 || ^5
+  checksum: 10c0/382ba2f2ffef31dde717ad43a69427bc930a6e2ec453d17b700ef7937b48996893a61657fdee3122654e027b1933341548493b35e6469520a8d4ae6c522d1ee2
   languageName: node
   linkType: hard
 

@@ -3,6 +3,8 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { visualizer } from "rollup-plugin-visualizer";
 import solid from "vite-plugin-solid";
+import wasm from "vite-plugin-wasm";
+import topLevelAwait from "vite-plugin-top-level-await";
 
 const root = "./src";
 const resolveRoot = (e: string) => path.resolve(__dirname, root, e);
@@ -11,7 +13,7 @@ export default defineConfig({
   root,
   publicDir: path.resolve(__dirname, "public"),
   appType: "mpa",
-  plugins: [tsconfigPaths(), solid(), visualizer()],
+  plugins: [wasm(), topLevelAwait(), tsconfigPaths(), solid(), visualizer()],
   build: {
     rollupOptions: {
       input: {

@@ -4,15 +4,23 @@ import { Show, createResource, onMount } from "solid-js";
 import * as T from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-import { checkBallAndPinCollision } from "./utils";
+// import { checkBallAndPinCollision } from "./utils";
 import { Ball, Pin, Board } from "./objects";
 import { assetsLoadingPromise } from "./assets";
+import {
+  RAPIER,
+  rapierPromise,
+  syncBodyToMesh,
+  syncMeshToBody,
+} from "./rapier";
 
-const BALL_SPAWN_INTERVAL = 333;
-const BALL_MAX_COUNT = 150;
+const BALL_SPAWN_INTERVAL = 1000;
+const BALL_MAX_COUNT = 1;
 
 export function Galton() {
-  const [completed] = createResource(() => assetsLoadingPromise);
+  const [completed] = createResource(() =>
+    Promise.all([assetsLoadingPromise, rapierPromise]),
+  );
 
   return (
     <Show
@@ -30,66 +38,92 @@ function GaltonScene() {
   let controls: OrbitControls;
 
   const camera = new T.PerspectiveCamera(65, 1, 0.1, 100);
-  camera.position.set(0, 15, 0);
+  camera.position.set(0, 16, 0);
 
   const scene = new T.Scene();
   scene.background = new T.Color(0x363636);
   setupScene(scene);
 
+  const gravity = new T.Vector3(0, 0, 9.81);
+  const world = new RAPIER.World(gravity);
+
   const N = 10;
-  const board = new Board(0.9, 0.6, N);
-  board.translateZ(-7);
+  const board = new Board(0.9, 0.6, N, world);
+  board.translateZ(-5);
   scene.add(board);
 
-  const gravity = new T.Vector3(0, 0, 9.81);
   let balls: Ball[] = [];
   let ballSpawnTime = performance.now();
   let lastTime = performance.now();
+
+  const ballRadius = Math.min(board.l, board.h) / 5;
+  for (let z = 3; z < 6; z += 1.5 * ballRadius) {
+    for (let i = 0; i < BALL_MAX_COUNT; ++i) {
+      const ball = new Ball(
+        Math.random() * 6 - 3,
+        0,
+        board.position.z - z,
+        ballRadius,
+        world,
+      );
+      ball.createBody(world);
+      balls.push(ball);
+      scene.add(ball);
+    }
+  }
+
+  world.bodies.forEach((body) => {
+    syncMeshToBody(body);
+  });
 
   function loop(time: DOMHighResTimeStamp) {
     const dt = (time - lastTime) / 1000;
     lastTime = time;
 
-    for (let i = 0; i < balls.length; ++i) {
-      const ball = balls[i];
+    world.bodies.forEach((body) => {
+      syncBodyToMesh(body);
+    });
 
-      if (ball.isRemoved) {
-        continue;
-      }
+    // for (let i = 0; i < balls.length; ++i) {
+    //   const ball = balls[i];
 
-      ball.velocity.addScaledVector(gravity, dt);
-      if (ball.velocity.x !== 0) {
-        const airDrag = new T.Vector3(-Math.sign(ball.velocity.x), 0, 0);
-        ball.velocity.addScaledVector(airDrag, dt);
-      }
-      ball.position.addScaledVector(ball.velocity, dt);
+    //   if (ball.isRemoved) {
+    //     continue;
+    //   }
 
-      if (
-        ball.position.z >
-        board.position.z + board.planeHeight - board.fallHeight - ball.r
-      ) {
-        board.collectBall(ball);
-        scene.remove(ball);
-        ball.isRemoved = true;
-        continue;
-      }
+    //   ball.velocity.addScaledVector(gravity, dt);
+    //   if (ball.velocity.x !== 0) {
+    //     const airDrag = new T.Vector3(-Math.sign(ball.velocity.x), 0, 0);
+    //     ball.velocity.addScaledVector(airDrag, dt);
+    //   }
+    //   ball.position.addScaledVector(ball.velocity, dt);
 
-      for (let pin of board.pins.children as Pin[]) {
-        if (checkBallAndPinCollision(ball, pin)) {
-          const pinGlobalPosition = new T.Vector3();
-          pin.getWorldPosition(pinGlobalPosition);
-          ball.position.z = pinGlobalPosition.z - ball.r - pin.r - 0.01;
-          ball.position.x = pinGlobalPosition.x;
+    //   if (
+    //     ball.position.z >
+    //     board.position.z + board.planeHeight - board.fallHeight - ball.r
+    //   ) {
+    //     board.collectBall(ball);
+    //     scene.remove(ball);
+    //     ball.isRemoved = true;
+    //     continue;
+    //   }
 
-          const t = 0.5;
-          const toss = Math.random() < 0.5 ? 1 : -1;
-          ball.velocity.x = toss * ((board.l + t ** 2 / 2) / t);
-          ball.velocity.z = (board.h - (gravity.z * t ** 2) / 2) / t;
-          ball.collidedPins.add(pin.id);
-          break;
-        }
-      }
-    }
+    //   for (let pin of board.pins.children as Pin[]) {
+    //     if (checkBallAndPinCollision(ball, pin)) {
+    //       const pinGlobalPosition = new T.Vector3();
+    //       pin.getWorldPosition(pinGlobalPosition);
+    //       ball.position.z = pinGlobalPosition.z - ball.r - pin.r - 0.01;
+    //       ball.position.x = pinGlobalPosition.x;
+
+    //       const t = 0.5;
+    //       const toss = Math.random() < 0.5 ? 1 : -1;
+    //       ball.velocity.x = toss * ((board.l + t ** 2 / 2) / t);
+    //       ball.velocity.z = (board.h - (gravity.z * t ** 2) / 2) / t;
+    //       ball.collidedPins.add(pin.id);
+    //       break;
+    //     }
+    //   }
+    // }
 
     if (
       balls.length < BALL_MAX_COUNT &&
@@ -97,14 +131,17 @@ function GaltonScene() {
     ) {
       ballSpawnTime = time;
       const ball = new Ball(
-        0,
-        0,
+        Math.random() * 0.25,
+        Math.random() * 0.25,
         board.position.z - 1,
         Math.min(board.l, board.h) / 5,
+        world,
       );
       balls.push(ball);
       scene.add(ball);
     }
+
+    world.step();
 
     controls.update();
     renderer.render(scene, camera);
@@ -116,6 +153,8 @@ function GaltonScene() {
       antialias: true,
       canvas: canvasEl,
     });
+    // renderer.shadowMap.enabled = true;
+    // renderer.shadowMap.type = T.VSMShadowMap;
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -141,7 +180,9 @@ function GaltonScene() {
 function setupScene(scene: T.Scene) {
   const ambientLight = new T.AmbientLight(0xffffff, 1.8);
   const pointLight = new T.PointLight(0xffffff, 7);
+  pointLight.castShadow = true;
   pointLight.position.y = 5;
+
   scene.add(
     // new T.GridHelper(16, 16),
     // new T.AxesHelper(10),
