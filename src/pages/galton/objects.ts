@@ -1,5 +1,3 @@
-/* @refresh reload */
-
 import * as T from "three";
 import type { RigidBody, World } from "@dimforge/rapier3d";
 
@@ -22,9 +20,10 @@ export class Board extends T.Group {
   slotHeight = PitWall.depth;
   planeHeight: number;
   planeWidth: number;
+  boardDepth: number;
+  ballsRadius: number;
 
   pins = new T.Group();
-  // progress = new T.Group();
 
   constructor(
     public h: number,
@@ -34,19 +33,19 @@ export class Board extends T.Group {
   ) {
     super();
     this.planeHeight = n * h + this.fallHeight + this.slotHeight;
-    this.planeWidth = (n + 1) * 2 * l + 0.5;
+    this.planeWidth = (n + 1) * l + 0.5;
+    this.boardDepth = 1.5;
+    this.ballsRadius = (h * 0.5) / 2;
 
     const floorSolidColorMaterial = new T.MeshPhongMaterial({
       color: 0x976d47,
     });
-
     const osbMaterial = new T.MeshPhongMaterial({
       map: osbTexture,
       normalMap: osbNormalMap,
       aoMap: osbAOMap,
       side: T.DoubleSide,
     });
-
     const floor = new T.Mesh(
       new T.BoxGeometry(this.planeWidth, this.planeHeight, 0.1),
       [
@@ -68,11 +67,12 @@ export class Board extends T.Group {
         this.planeWidth / 2,
         this.planeHeight / 2,
         0.1 / 2,
-      ).setFriction(0.8),
+      ).setFriction(0),
       floorBody,
     );
     floorBody.userData = { mesh: floor };
 
+    // Glass cover
     const glass = new T.Mesh(
       new T.PlaneGeometry(this.planeWidth, this.planeHeight),
       new T.MeshPhysicalMaterial({
@@ -88,7 +88,7 @@ export class Board extends T.Group {
         clearcoatRoughness: 0.3,
       }),
     );
-    glass.translateY(1.05);
+    glass.translateY(this.boardDepth + 0.05);
     glass.translateZ(this.planeHeight / 2 - this.fallHeight);
     glass.rotateX(-Math.PI / 2);
 
@@ -103,45 +103,79 @@ export class Board extends T.Group {
     );
     glassBody.userData = { mesh: glass };
 
-    // Bottom
+    // Bottom plywood
     const bottomFloor = new WoodenBox(
-      new T.BoxGeometry(this.planeWidth, 1, 0.5),
+      new T.BoxGeometry(this.planeWidth, this.boardDepth * 2, 0.5),
       0,
-      0.5,
-      this.planeHeight - this.fallHeight + 0.05,
+      this.boardDepth / 2,
+      this.planeHeight - this.fallHeight + 0.25,
     );
     this.add(bottomFloor);
     bottomFloor.createBody(world);
 
     {
-      const angle = Math.atan2(h, l);
-      const d = 11.5;
+      const angle = Math.atan2(h, l / 2);
+      const q = Math.hypot(h, l / 2);
+      const d = n * q;
       const leftFence = new WoodenBox(
-        new T.BoxGeometry(d, 1, 0.2),
-        -3.5,
-        0.5,
-        3.2,
+        new T.BoxGeometry(d, this.boardDepth, 0.2),
+        0,
+        this.boardDepth / 2,
+        0,
       );
       const rightFence = new WoodenBox(
-        new T.BoxGeometry(d, 1, 0.2),
-        3.5,
-        0.5,
-        3.2,
+        new T.BoxGeometry(d, this.boardDepth, 0.2),
+        0,
+        this.boardDepth / 2,
+        0,
       );
-      leftFence.rotateY(angle);
-      rightFence.rotateY(-angle);
 
-      this.add(leftFence, rightFence);
-      leftFence.createBody(world);
-      rightFence.createBody(world);
+      leftFence.translateX(-2 * l);
+      leftFence.rotateY(angle);
+      leftFence.translateX(-d / 2);
+      leftFence.translateX(q);
+
+      rightFence.translateX(2 * l);
+      rightFence.rotateY(-angle);
+      rightFence.translateX(d / 2);
+      rightFence.translateX(-q);
+
+      // this.add(leftFence, rightFence);
+      // leftFence.createBody(world);
+      // rightFence.createBody(world);
     }
 
     {
-      const d = 5;
-      const x = new WoodenBox(new T.BoxGeometry(d, 1, 0.2), -2.6, 0.5, -2.8);
-      const y = new WoodenBox(new T.BoxGeometry(d, 1, 0.2), 2.6, 0.5, -2.8);
-      x.rotateY(-Math.PI / 6);
-      y.rotateY(Math.PI / 6);
+      const d =
+        Math.hypot(this.fallHeight - h, this.planeWidth / 2) -
+        2.6 * this.ballsRadius;
+      const angle = Math.atan2(this.fallHeight - h, this.planeWidth / 2);
+      const x = new WoodenBox(
+        new T.BoxGeometry(d, this.boardDepth, 0.2),
+        0,
+        this.boardDepth / 2,
+        0,
+      );
+      const y = new WoodenBox(
+        new T.BoxGeometry(d, this.boardDepth, 0.2),
+        0,
+        this.boardDepth / 2,
+        0,
+      );
+      x.translateX(-this.planeWidth / 2 + d / 2);
+      x.translateZ(-this.fallHeight);
+
+      x.translateX(-d / 2);
+      x.rotateY(-angle);
+      x.translateX(d / 2);
+
+      y.translateX(this.planeWidth / 2 - d / 2);
+      y.translateZ(-this.fallHeight);
+
+      y.translateX(d / 2);
+      y.rotateY(angle);
+      y.translateX(-d / 2);
+
       this.add(x, y);
       x.createBody(world);
       y.createBody(world);
@@ -149,19 +183,20 @@ export class Board extends T.Group {
 
     // Pins
     for (let i = 1; i <= n; ++i) {
-      const offsetX = 0 - (i - 1) * l;
+      // const offsetX = 0 - (i - 1) * l;
+      const offsetX = (Number(i % 2) * l) / 2 - ((n - 1) * l) / 2;
+      // const offsetX = Number(i % 2) * l * 0 - ((i - 1) * l) / 2;
+      // const offsetX = (Number(i % 2) * l) / 2 - 4;
       const offsetZ = (i - 1) * h;
-      for (let j = 1; j <= i; ++j) {
-        const pinMesh = new Pin(
-          offsetX + (j - 1) * 2 * l,
-          Pin.height / 2,
-          offsetZ,
-        );
+      for (let j = 1; j <= n; ++j) {
+        const pinMesh = new Pin(offsetX + (j - 1) * l, Pin.height / 2, offsetZ);
         this.pins.add(pinMesh);
 
         const pinBody = world.createRigidBody(RAPIER.RigidBodyDesc.fixed());
         world.createCollider(
-          RAPIER.ColliderDesc.cylinder(Pin.height / 2, pinMesh.r),
+          RAPIER.ColliderDesc.cylinder(Pin.height / 2, pinMesh.r).setFriction(
+            1,
+          ),
           pinBody,
         );
         pinBody.userData = { mesh: pinMesh };
@@ -170,57 +205,49 @@ export class Board extends T.Group {
 
     // Bottom walls
     {
-      const offsetX = -(n + 1) * l;
-      const offsetZ = n * h;
-
+      const offsetX = (-(n + 1) * l) / 2;
       for (let j = 1; j <= n + 2; ++j) {
+        const isOuterWall = j === 1 || j === n + 2;
+        const wallHeight = isOuterWall ? this.planeHeight : this.slotHeight;
         const wall = new PitWall(
-          offsetX + (j - 1) * 2 * l,
+          offsetX + (j - 1) * l,
           PitWall.height / 2,
-          offsetZ,
-          j === 1 || j === n + 2 ? 6 : 5,
+          this.planeHeight - this.fallHeight - wallHeight / 2,
+          wallHeight,
         );
-        wall.translateZ(j === 1 || j === n + 2 ? 2 : 2.5);
+
+        if (isOuterWall) {
+          wall.material.forEach((mat) => {
+            mat.color.set(0xffeeee);
+          });
+        }
+
         wall.createBody(world);
         this.add(wall);
       }
     }
 
-    // Progress bars
-    // for (let i = 0; i < n + 1; i++) {
-    //   this.progress.add(new ProgressBar(i * (2 * l), 0, 0, 2 * l - 0.1));
-    // }
-    // this.progress.translateZ(this.planeHeight - this.fallHeight);
-    // this.progress.translateX(-this.planeWidth / 2 + l + 0.25);
-
     // Bell curve
     const bell = new BellCurve(this.planeWidth, n);
     bell.translateZ(this.planeHeight - this.fallHeight);
-    bell.translateY(1.1);
+    bell.translateY(this.boardDepth + 0.075);
     bell.rotateX(-Math.PI / 2);
 
-    this.add(floor, glass, bell, this.pins /*this.progress*/);
+    this.add(floor, glass, bell, this.pins);
     // this.add(new T.AxesHelper(10));
-  }
-
-  collectBall(ball: Ball) {
-    // const i = Math.floor(
-    //   T.MathUtils.mapLinear(
-    //     ball.position.x,
-    //     -this.planeWidth / 2,
-    //     this.planeWidth / 2,
-    //     0,
-    //     this.progress.children.length,
-    //   ),
-    // );
-    // (this.progress.children[i] as ProgressBar).increase(0.1);
   }
 }
 
 export class Pin extends T.Mesh {
-  r = 0.2;
-  static height = 0.9;
-  static pinGeometry = new T.CylinderGeometry(0.15, 0.2, Pin.height);
+  static DEFAULT_RADIUS = 0.2;
+  static height = 1.5;
+  static pinGeometry = new T.CylinderGeometry(
+    0.15,
+    Pin.DEFAULT_RADIUS,
+    Pin.height,
+  );
+
+  r = Pin.DEFAULT_RADIUS;
 
   constructor(x: number, y: number, z: number) {
     super(
@@ -238,11 +265,11 @@ export class Pin extends T.Mesh {
   }
 }
 
-export class WoodenBox extends T.Mesh<T.BoxGeometry> {
+export class WoodenBox extends T.Mesh<T.BoxGeometry, T.MeshPhongMaterial[]> {
   constructor(geometry: T.BoxGeometry, x: number, y: number, z: number) {
     const { width, height, depth } = geometry.parameters;
     const textureOffset = Math.random() * 5;
-    const textureScale = 0.4;
+    const textureScale = 0.2;
 
     const materialLeft = woodenMaterial.clone();
     materialLeft.map = woodenMaterial.map!.clone();
@@ -300,8 +327,8 @@ export class WoodenBox extends T.Mesh<T.BoxGeometry> {
 }
 
 export class PitWall extends WoodenBox {
-  static width = 0.1;
-  static height = 1;
+  static width = 0.2;
+  static height = 1.5;
   static depth = 5;
 
   constructor(x: number, y: number, z: number, h: number = PitWall.depth) {
@@ -312,58 +339,29 @@ export class PitWall extends WoodenBox {
 export class Ball extends T.Mesh {
   static ballMaterial = new T.MeshPhongMaterial({
     color: 0x333333,
-    shininess: 2,
-    reflectivity: 2,
+    shininess: 4,
+    reflectivity: 1,
     specular: 0xffffff,
   });
 
-  isRemoved: boolean = false;
-  collidedPins: Set<number> = new Set();
-
-  constructor(x: number, y: number, z: number, public r: number, world: World) {
+  constructor(x: number, y: number, z: number, public r: number) {
     super(new T.SphereGeometry(r), Ball.ballMaterial);
     this.position.set(x, y, z);
     this.translateY(2 * r);
   }
 
-  createBody(world: World): void {
+  createBody(world: World): RigidBody {
+    const mass = 3.5;
     const body = world.createRigidBody(RAPIER.RigidBodyDesc.dynamic());
     world.createCollider(
-      RAPIER.ColliderDesc.ball(this.r).setRestitution(0.5).setMass(2),
+      RAPIER.ColliderDesc.ball(this.r)
+        .setRestitution(0.2)
+        .setFriction(0.1)
+        .setMass(mass),
       body,
     );
     body.userData = { mesh: this };
-  }
-}
-
-export class ProgressBar extends T.Mesh {
-  static barGeometry = new T.BoxGeometry(1, 1, 1);
-  static barMaterial = new T.MeshBasicMaterial({
-    color: 0x558855,
-  });
-
-  static {
-    ProgressBar.barGeometry.translate(0, 0.5, -0.5);
-  }
-
-  height: number = 0;
-
-  constructor(x: number, y: number, z: number, public width: number) {
-    super(ProgressBar.barGeometry, ProgressBar.barMaterial);
-    this.position.set(x, y, z);
-    this.rescale();
-    this.visible = false;
-  }
-
-  increase(dh: number) {
-    this.height += dh;
-    this.visible = true;
-    this.rescale();
-  }
-
-  rescale() {
-    this.scale.x = this.width;
-    this.scale.z = this.height;
+    return body;
   }
 }
 
@@ -383,7 +381,7 @@ export class BellCurve extends T.Mesh {
     shape.closePath();
 
     const g = new T.ExtrudeGeometry(shape, {
-      depth: 0.05,
+      depth: 0.025,
       bevelEnabled: false,
     });
     const material = new T.MeshPhongMaterial({
