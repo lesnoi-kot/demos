@@ -10,10 +10,9 @@ import {
   syncBodyToMesh,
   syncMeshToBody,
 } from "./rapier";
-import type { World } from "@dimforge/rapier3d";
 
-// const BALL_SPAWN_INTERVAL = 1000;
-const BALLS_COUNT = 8;
+const BALLS_COUNT = 64;
+const PINS_ROWS = 10;
 
 export function Galton() {
   const [completed] = createResource(() =>
@@ -35,31 +34,48 @@ function GaltonScene() {
   let renderer: T.WebGLRenderer;
   let controls: OrbitControls;
 
-  const camera = new T.PerspectiveCamera(65, 1, 0.1, 100);
-  camera.position.set(0, 20, 0);
-  camera.translateZ(5);
+  const camera = new T.PerspectiveCamera(
+    65,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    100,
+  );
+  camera.position.set(0, 20, 10);
 
   const scene = new T.Scene();
-  scene.background = new T.Color(0x363636);
-  setupScene(scene);
+  scene.background = new T.Color(0x161616);
 
   const gravity = new T.Vector3(0, 0, 9.81);
   const world = new RAPIER.World(gravity);
 
-  const N = 10;
-  const board = new Board(1, 1, N, world);
+  const board = new Board(0.5, 1, PINS_ROWS, world);
+
+  setupScene(board, scene);
   scene.add(board);
 
   function generateBalls(count: number) {
-    const rows = Math.floor(Math.sqrt(count));
-    const perRow = rows;
-    for (let row = 0; row < rows; row++) {
-      const z = 4 + row * 2.25 * board.ballsRadius;
+    const ballsDiameter = board.ballsRadius * 2;
+    const perRow = Math.floor(
+      (board.planeWidth - board.borderWidth * 2 - ballsDiameter) /
+        ballsDiameter,
+    );
+    const rows = Math.floor(count / perRow);
+
+    for (let row = 0; row <= rows; row++) {
+      const z =
+        board.position.z -
+        board.planeHeight / 2 +
+        board.borderWidth * 2 +
+        ballsDiameter +
+        row * ballsDiameter;
       for (let i = 0; i < perRow; ++i) {
         const ball = new Ball(
-          perRow / 2 - i + Math.random() / 2,
+          -board.planeWidth / 2 +
+            board.borderWidth +
+            ballsDiameter +
+            i * ballsDiameter,
           0,
-          board.position.z - z,
+          z,
           board.ballsRadius,
         );
         const body = ball.createBody(world);
@@ -85,15 +101,15 @@ function GaltonScene() {
       antialias: true,
       canvas: canvasEl,
     });
-    // renderer.shadowMap.enabled = true;
-    // renderer.shadowMap.type = T.VSMShadowMap;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = T.VSMShadowMap;
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
-    controls.target.set(0, 0, 5);
+    controls.target.set(0, 0, 0);
 
     function onResize() {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -103,13 +119,10 @@ function GaltonScene() {
 
     window.addEventListener("resize", onResize);
     window.addEventListener("dblclick", () => {
-      generateBalls(64);
-      // world.bodies.forEach((body) => {
-      //   syncMeshToBody(body);
-      // });
+      generateBalls(BALLS_COUNT);
     });
 
-    generateBalls(64);
+    generateBalls(BALLS_COUNT);
     world.bodies.forEach((body) => {
       syncMeshToBody(body);
     });
@@ -120,17 +133,24 @@ function GaltonScene() {
   return <canvas ref={canvasEl!} />;
 }
 
-function setupScene(scene: T.Scene) {
-  const ambientLight = new T.AmbientLight(0xffffff, 1.2);
-  const pointLight = new T.PointLight(0xffffff, 7);
+function setupScene(board: Board, scene: T.Scene) {
+  const ambientLight = new T.AmbientLight(0xffffff, 0.2);
+
+  const pointLight = new T.PointLight(0xffffff, 12, 0, 1);
   pointLight.castShadow = true;
-  pointLight.position.y = 5;
+  pointLight.position.y = 13;
+
+  const spotLight = new T.SpotLight(0xffffff, 10, 20, Math.PI / 11, 0, 1);
+  spotLight.position.set(0, 5, -board.planeHeight);
+  spotLight.lookAt(0, 0, -board.planeHeight);
 
   scene.add(
     // new T.GridHelper(16, 16),
     // new T.AxesHelper(10),
     // new T.PointLightHelper(pointLight),
+    // new T.SpotLightHelper(spotLight),
     ambientLight,
+    spotLight,
     pointLight,
   );
 }

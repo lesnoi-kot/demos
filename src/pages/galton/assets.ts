@@ -3,7 +3,8 @@ import * as T from "three";
 import plywoodImage from "./plywood/Wood_Plywood_Front_001_basecolor.jpg";
 import plywoodNormalImage from "./plywood/Wood_Plywood_Front_001_normal.jpg";
 
-import aluminiumImage from "./aluminium.jpg";
+import aluminiumImage from "./metal.jpg";
+import metalNormalImage from "./Metal_scratched_008_normal.jpg";
 
 import osbImage from "./Wood_Particle_Board_003_SD/Wood_Particle_Board_003_basecolor.jpg";
 import osbNormalImage from "./Wood_Particle_Board_003_SD/Wood_Particle_Board_003_normal.jpg";
@@ -28,23 +29,24 @@ export let plywoodNormalMap: T.Texture;
 
 export let glassNormalMap: T.Texture;
 export let aluminiumTexture: T.Texture;
+export let metalNormalMap: T.Texture;
 
 export const assetsLoadingPromise = Promise.all([
   // OSB
   textureLoader.loadAsync(osbImage).then((texture) => {
     osbTexture = texture;
     prepareTexture(osbTexture);
-    osbTexture.repeat.set(2, 2);
+    osbTexture.repeat.set(1, 2);
   }),
   textureLoader.loadAsync(osbNormalImage).then((texture) => {
     osbNormalMap = texture;
     osbNormalMap.wrapS = osbNormalMap.wrapT = T.RepeatWrapping;
-    osbNormalMap.repeat.set(2, 2);
+    osbNormalMap.repeat.set(1, 2);
   }),
   textureLoader.loadAsync(osbAOImage).then((texture) => {
     osbAOMap = texture;
     osbAOMap.wrapS = osbNormalMap.wrapT = T.RepeatWrapping;
-    osbAOMap.repeat.set(2, 2);
+    osbAOMap.repeat.set(1, 2);
   }),
 
   // Wood
@@ -68,7 +70,13 @@ export const assetsLoadingPromise = Promise.all([
   }),
 
   textureLoader.loadAsync(aluminiumImage).then((texture) => {
-    aluminiumTexture = texture;
+    prepareTexture((aluminiumTexture = texture));
+    aluminiumTexture.repeat.set(0.5, 0.5);
+  }),
+  textureLoader.loadAsync(metalNormalImage).then((texture) => {
+    prepareTexture((metalNormalMap = texture));
+    metalNormalMap.repeat.set(1, 1);
+    metalNormalMap.repeat.multiplyScalar(0.1);
   }),
 
   textureLoader.loadAsync("/Glass_normal.jpg").then((texture) => {
