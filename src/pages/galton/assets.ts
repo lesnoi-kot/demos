@@ -4,7 +4,7 @@ import plywoodImage from "./plywood/Wood_Plywood_Front_001_basecolor.jpg";
 import plywoodNormalImage from "./plywood/Wood_Plywood_Front_001_normal.jpg";
 
 import aluminiumImage from "./metal.jpg";
-import metalNormalImage from "./Metal_scratched_008_normal.jpg";
+import metalNormalImage from "./Metal_Diamond_001_NORM.jpeg";
 
 import osbImage from "./Wood_Particle_Board_003_SD/Wood_Particle_Board_003_basecolor.jpg";
 import osbNormalImage from "./Wood_Particle_Board_003_SD/Wood_Particle_Board_003_normal.jpg";
@@ -76,7 +76,7 @@ export const assetsLoadingPromise = Promise.all([
   textureLoader.loadAsync(metalNormalImage).then((texture) => {
     prepareTexture((metalNormalMap = texture));
     metalNormalMap.repeat.set(1, 1);
-    metalNormalMap.repeat.multiplyScalar(0.1);
+    metalNormalMap.repeat.multiplyScalar(0.7);
   }),
 
   textureLoader.loadAsync("/Glass_normal.jpg").then((texture) => {
