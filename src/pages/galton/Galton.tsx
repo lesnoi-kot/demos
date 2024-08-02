@@ -16,6 +16,8 @@ import {
 const BALLS_COUNT = 64;
 const PINS_ROWS = 10;
 
+const gui = new GUI({ title: "Options" });
+
 export function Galton() {
   const [completed] = createResource(() =>
     Promise.all([assetsLoadingPromise, rapierPromise]),
@@ -43,12 +45,11 @@ function GaltonScene() {
     0.1,
     100,
   );
-  camera.position.set(0, 20, 10);
+  camera.position.set(0, 24, 0);
 
   const scene = new T.Scene();
   scene.background = new T.Color(0x161616);
 
-  const gui = new GUI({ title: "Options" });
   gui
     .add({ debug: false }, "debug")
     .name("Debug")
@@ -124,6 +125,9 @@ function GaltonScene() {
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
+    controls.minPolarAngle = 0;
+    controls.maxPolarAngle = Math.PI / 3;
+    controls.enablePan = false;
     controls.target.set(0, 0, 0);
 
     document.body.appendChild(stats.dom);
@@ -151,20 +155,25 @@ function GaltonScene() {
 }
 
 function setupScene(board: Board, scene: T.Scene) {
-  const ambientLight = new T.AmbientLight(0xffffff, 0.2);
+  const ambientLight = new T.AmbientLight(0xffffff, 0.4);
 
-  const pointLight = new T.PointLight(0xffffff, 10, 0, 1);
+  const pointLight = new T.PointLight(0xffeeee, 30, 0, 1.25);
   pointLight.castShadow = true;
-  pointLight.position.y = 5;
+  pointLight.position.set(0, 20, -10);
+  pointLight.shadow.mapSize.set(1024, 1024);
+  pointLight.shadow.bias = -0.0001;
 
-  const pointLightTop = new T.PointLight(0xffffff, 13, 0, 1);
-  pointLightTop.castShadow = true;
-  pointLightTop.position.set(0, 10, -10);
-
-  const spotLight = new T.SpotLight(0xffffff, 40, 40, Math.PI / 11, 0, 1);
+  const spotLight = new T.SpotLight(0xffaaaa, 40, 30, Math.PI / 11, 0, 1);
+  spotLight.position.set(17, 18, -board.planeDepth / 3);
+  spotLight.target.position.set(0, 0, -board.planeDepth / 4);
   spotLight.castShadow = true;
-  spotLight.position.set(0, 18, board.planeDepth);
-  spotLight.lookAt(0, 0, -board.planeDepth);
+  spotLight.shadow.bias = -0.0001;
+
+  const spotLightRight = new T.SpotLight(0xaaffaa, 40, 30, Math.PI / 11, 0, 1);
+  spotLightRight.position.set(-17, 18, board.planeDepth / 3);
+  spotLightRight.target.position.set(0, 0, board.planeDepth / 4);
+  spotLightRight.castShadow = true;
+  spotLightRight.shadow.bias = -0.0001;
 
   const debugHelpers = new T.Group();
   debugHelpers.name = "debugHelpers";
@@ -173,15 +182,22 @@ function setupScene(board: Board, scene: T.Scene) {
     new T.GridHelper(16, 16),
     new T.AxesHelper(10),
     new T.PointLightHelper(pointLight),
-    new T.PointLightHelper(pointLightTop),
     new T.SpotLightHelper(spotLight),
+    new T.SpotLightHelper(spotLightRight),
   );
+
+  // gui.add(pointLight.position, "y", 2, 50).name("Light position");
 
   scene.add(
     debugHelpers,
     ambientLight,
-    // pointLightTop,
+
     // spotLight,
+    // spotLight.target,
+
+    // spotLightRight,
+    // spotLightRight.target,
+
     pointLight,
   );
 }

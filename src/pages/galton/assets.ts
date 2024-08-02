@@ -3,26 +3,34 @@ import * as T from "three";
 import plywoodImage from "./plywood/Wood_Plywood_Front_001_basecolor.jpg";
 import plywoodNormalImage from "./plywood/Wood_Plywood_Front_001_normal.jpg";
 
-import aluminiumImage from "./metal.jpg";
+import aluminiumImage from "./aluminium.jpg";
 import metalNormalImage from "./Metal_Diamond_001_NORM.jpeg";
 
 import osbImage from "./Wood_Particle_Board_003_SD/Wood_Particle_Board_003_basecolor.jpg";
 import osbNormalImage from "./Wood_Particle_Board_003_SD/Wood_Particle_Board_003_normal.jpg";
 import osbAOImage from "./Wood_Particle_Board_003_SD/Wood_Particle_Board_003_ambientOcclusion.jpg";
+import osbMetalImage from "./Wood_Particle_Board_003_SD/Wood_Particle_Board_003_metallic.jpg";
+import osbRoughImage from "./Wood_Particle_Board_003_SD/Wood_Particle_Board_003_roughness.jpg";
 
 import woodImage from "./wood/Wood_011_Base_Color.jpg";
 import woodNormalImage from "./wood/Wood_011_Normal.jpg";
 import woodAOImage from "./wood/Wood_011_ambientOcclusion.jpg";
+
+import darkWoodImage from "./Wood_021_basecolor.jpg";
 
 const textureLoader = new T.TextureLoader();
 
 export let osbTexture: T.Texture;
 export let osbNormalMap: T.Texture;
 export let osbAOMap: T.Texture;
+export let osbRoughMap: T.Texture;
+export let osbMetalMap: T.Texture;
 
 export let woodTexture: T.Texture;
 export let woodNormalMap: T.Texture;
 export let woodAOMap: T.Texture;
+
+export let darkWoodTexture: T.Texture;
 
 export let plywoodTexture: T.Texture;
 export let plywoodNormalMap: T.Texture;
@@ -48,6 +56,16 @@ export const assetsLoadingPromise = Promise.all([
     osbAOMap.wrapS = osbNormalMap.wrapT = T.RepeatWrapping;
     osbAOMap.repeat.set(1, 2);
   }),
+  textureLoader.loadAsync(osbMetalImage).then((texture) => {
+    osbMetalMap = texture;
+    osbMetalMap.wrapS = osbMetalMap.wrapT = T.RepeatWrapping;
+    osbMetalMap.repeat.set(1, 2);
+  }),
+  textureLoader.loadAsync(osbRoughImage).then((texture) => {
+    osbRoughMap = texture;
+    osbRoughMap.wrapS = osbRoughMap.wrapT = T.RepeatWrapping;
+    osbRoughMap.repeat.set(1, 2);
+  }),
 
   // Wood
   textureLoader.loadAsync(woodImage).then((texture) => {
@@ -59,6 +77,12 @@ export const assetsLoadingPromise = Promise.all([
   }),
   textureLoader.loadAsync(woodAOImage).then((texture) => {
     woodAOMap = texture;
+  }),
+
+  // Dark wood
+  textureLoader.loadAsync(darkWoodImage).then((texture) => {
+    darkWoodTexture = texture;
+    prepareTexture(darkWoodTexture);
   }),
 
   // Plywood
