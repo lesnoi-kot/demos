@@ -20,6 +20,7 @@ export default defineConfig({
         main: resolveRoot("index.html"),
         hanoi: resolveRoot("pages/hanoi/index.html"),
         skyboxes: resolveRoot("pages/skyboxes/index.html"),
+        timer: resolveRoot("pages/cat-cloud/index.html"),
       },
       output: {
         manualChunks(id) {
